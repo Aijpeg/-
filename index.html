@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Тренажер меню</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Спокойный минимализм: серая бумага и чернила, одна горчичная подсветка. Колонка 640px, один гротеск, углы скруглены на 6px. */
+:root{--bg:#ececea;--fg:#1d1d1b;--card:#f7f7f5;--mut:#6b6b66;--bd:#c6c6c0;--btn:#1d1d1b;--on:#f7f7f5;--hi:#e0a82e;--ok:#2f6f3e;--bad:#b3261e;--r:6px;--sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#151513;--fg:#e8e8e3;--card:#1e1e1c;--mut:#9a9a92;--bd:#3a3a36;--btn:#e8e8e3;--on:#151513;--hi:#d9a81e;--ok:#6fbf73;--bad:#ef6a5f;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#151513;--fg:#e8e8e3;--card:#1e1e1c;--mut:#9a9a92;--bd:#3a3a36;--btn:#e8e8e3;--on:#151513;--hi:#d9a81e;--ok:#6fbf73;--bad:#ef6a5f;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--fg);font:400 16px/1.45 var(--sans)}
+#app{max-width:640px;margin:0 auto;padding:12px 16px 24px}
+.hdr{text-align:center;margin:0 0 16px;padding-bottom:12px;border-bottom:1px solid var(--bd)}
+.ver{text-align:right;font-size:12px;line-height:1;color:var(--mut);font-variant-numeric:tabular-nums;margin-bottom:10px}
+.hdr b{display:block;font:600 22px/1.2 var(--sans)}
+.hdr span{display:block;margin-top:4px;color:var(--mut);font-size:14px;font-style:italic}
+.tabs{display:flex;gap:6px;overflow-x:auto;margin-bottom:14px;padding-bottom:2px}
+button{font:inherit;color:var(--fg);background:var(--card);border:1px solid var(--bd);border-radius:var(--r);padding:10px 14px;cursor:pointer}
+button:hover:not(:disabled){border-color:var(--fg)}
+button:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,summary:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
+.tabs button{white-space:nowrap;font-weight:500;font-size:14px}
+.tabs .on,button.p{background:var(--btn);border-color:var(--btn);color:var(--on)}
+button.p{font-weight:500}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:18px;margin-bottom:14px}
+.big{min-height:200px;display:flex;flex-direction:column;justify-content:center;text-align:center;cursor:pointer}
+h2{margin:0 0 6px;font:600 20px/1.25 var(--sans);text-wrap:balance}
+h3{margin:18px 0 8px;font:600 12px/1.2 var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--mut);border-bottom:1px solid var(--bd);padding-bottom:6px}
+.m,.sc{color:var(--mut);font-size:14px}.sc{margin-bottom:8px;font-size:13px}
+ul{text-align:left;margin:0;padding-left:20px}
+.row{display:flex;gap:8px}.row button{flex:1}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chip{padding:7px 12px;border-radius:var(--r)}.chip.sel{border-color:var(--fg);background:color-mix(in srgb,var(--hi) 30%,var(--card));box-shadow:inset 0 0 0 1px var(--fg)}
+.ok{border-color:var(--ok)!important;background:color-mix(in srgb,var(--ok) 20%,var(--card))}
+.miss{border:2px dashed var(--ok)!important}.bad{border-color:var(--bad)!important;background:color-mix(in srgb,var(--bad) 20%,var(--card))}
+.opts button{display:block;width:100%;text-align:left;margin-bottom:8px}
+input{width:100%;box-sizing:border-box;font:inherit;padding:10px 12px;border-radius:var(--r);border:1px solid var(--bd);background:var(--bg);color:var(--fg);margin-bottom:10px}
+input:focus,select:focus{outline:2px solid var(--fg);outline-offset:1px;border-color:var(--fg)}
+select{appearance:none;-webkit-appearance:none;font:inherit;padding:8px 40px 8px 12px;border-radius:var(--r);border:1px solid var(--bd);background:var(--card) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%238a8a85' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 14px center;color:var(--fg);cursor:pointer}
+details{background:var(--card);border:1px solid var(--bd);border-radius:var(--r);padding:10px 14px;margin-bottom:8px}summary{cursor:pointer;font-weight:600}details p{margin:8px 0 0;color:var(--mut)}
+.bar{display:flex;gap:6px;margin-bottom:12px}.bar select{flex:1;min-width:0}
+.r{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid var(--bd)}
+label{color:var(--mut);font-size:14px}
+mark{background:color-mix(in srgb,var(--hi) 55%,transparent);color:inherit;font-weight:600;border-radius:2px}
+.sug{max-height:220px;overflow-y:auto;border:1px solid var(--bd);border-radius:var(--r);background:var(--bg)}
+.sug button{display:block;width:100%;text-align:left;border:0;border-bottom:1px solid var(--bd);border-radius:0;background:transparent;padding:9px 12px}
+.sug button:last-child{border-bottom:0}.sug button.hi{background:color-mix(in srgb,var(--hi) 30%,transparent)}
+label.f{display:block;margin:12px 0 4px;font-size:13px;color:var(--mut)}
+select.w{width:100%}
+textarea{width:100%;box-sizing:border-box;font:13px/1.4 ui-monospace,Menlo,Consolas,"Courier New",monospace;padding:10px 12px;border-radius:var(--r);border:1px solid var(--bd);background:var(--bg);color:var(--fg);resize:vertical}
+textarea:focus{outline:2px solid var(--fg);outline-offset:1px}
+.erow{display:flex;justify-content:space-between;gap:8px;width:100%;text-align:left;margin-bottom:6px}
+.erow span:first-child{min-width:0;overflow-wrap:anywhere}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const VER="2.3",VDATE="18.10.2026";
+/* БАЗА БЛЮД */
+const DB0=`# Тренажёр меню: база блюд
+#updated 2026-10-18
+#maxid 47
+d01|Сеты завтраков|Breakfast Master|колбаски 2 шт;шампиньоны;яйцо 2 шт;сливочное масло;тартин;мороженое;шоколадный топпинг;фасоль;лепестки миндаля;помидоры;брауни;зеленый лук
+d02|Сеты завтраков|Breakfast Alden|репчатый лук;помидоры;яйцо;болгарский перец;пицца-соус;кинза;хумус;баклажан;огурцы;томаты черри;голландский сыр;симит;базиликовое масло
+d03|Сеты завтраков|Breakfast Toiyp al|яйцо 2 шт;молоко;говяжья ветчина;шампиньоны;сыр чеддер;огурцы;помидоры;микс салата;лимонный сок;микс орехов;оливковое масло;чиа-пудинг;гранола (овсянка, мёд, кешью, грецкий орех, лепестки миндаля);персик;соус манго;фисташки;мини-круассан
+d04|Сладкие завтраки и каши|Овсяная каша с вишневым топингом|овсянка;молоко;сахар;сливочное масло;бриошь;шоколадный крамбл;вишневое варенье
+d05|Сладкие завтраки и каши|Рисовая каша с манго и персиком|рис;молоко;сахар;сливочное масло;соус манго;персик;бриошь
+d06|Сладкие завтраки и каши|Гречневая каша с грибами и яйцом пашот|гречка;шампиньоны;сыр пармезан;репчатый лук;сливочное масло;яйцо;бриошь;микрозелень
+d07|Завтраки|Драники из зеленого цукини с лососем|драники с цукини 3 шт;гуакамоле;семга х/к;микс орехов;тартин;яйцо 2 шт;огурцы;помидоры;микс салата;лимонный сок;оливковое масло
+d08|Завтраки|Завтрак с 6-минутными яйцами|яйцо 2 шт;микс салата;тартин;базиликовое масло;сыр креметте;печеный перец;куриный рулет;голландский сыр;микс орехов;томаты черри
+d09|Завтраки|Завтрак с казы|яйцо 2 шт;хашбраун;томаты черри;шампиньоны;тартин;казы;микс салата;базиликовое масло;микс орехов;зеленый лук
+d10|Завтраки|Яйцо Роял на вафле из цукини с лососем|венская вафля с цукини;семга х/к;яйцо 2 шт;соус голландез;маринованные огурцы;микс салата;микс орехов;базиликовое масло;гуакамоле;микрозелень
+d11|Завтраки|Тост гуакамоле с лососем|бриошь;семга х/к;сыр креметте;яйцо 2 шт;базиликовое масло;маринованные огурцы;микс салата;микс орехов;гуакамоле;томаты черри
+d12|Завтраки|Гриль-завтрак с индейкой|пита;бедро индейки;соус дзадзики;томаты черри;микс салата;огурцы;лимонный сок;оливковое масло;яйцо 2 шт;микс орехов;зеленый лук
+d13|Завтраки|Бенедикт на бриоше с копченой кониной|бриошь;копченая конина;шпинат;чеснок;яйцо 2 шт;крем-чиз с шампиньонами;соус голландез;микс орехов;микрозелень
+d14|Завтраки|Скрэмбл с хашбрауном и индейкой|микс салата;огурцы;лимонный сок;помидоры;оливковое масло;яйцо 3 шт;копченая индейка;хашбраун 2 шт;чиабатта;зеленый лук
+d15|Завтраки|Шакшука с моцареллой и питой|репчатый лук;болгарский перец;томатный соус;помидоры;кинза;сыр моцарелла;пита;яйцо 2 шт
+d16|Завтраки|Английский завтрак|колбаски 2 шт;шампиньоны;яйцо 2 шт;сливочное масло;тартин;фасоль;помидоры;копченая конина;картофель;зеленый лук
+d17|Завтраки|Завтрак с лососем и авокадо|яйцо 2 шт;гуакамоле;маринованные огурцы;семга х/к;микс салата;томаты черри;микс орехов;тартин;оливковое масло;базиликовое масло
+d18|Завтраки|Французский омлет|яйцо 2 шт;молоко;шампиньоны;сыр чеддер;говяжья ветчина;огурцы;помидоры;микс салата;микс орехов;оливковое масло;лимонный сок
+d19|Сладкие завтраки и каши|Сырники с вишней и мороженым|сырники 3 шт;шоколадный крамбл;мороженое;вишневое варенье;фисташки;сахарная пудра
+d20|Сладкие завтраки и каши|Сырники из рисовой муки с манго и персиком|рисовые сырники 3 шт;соус манго;персик;крем тирамису;фисташки;сахарная пудра
+d21|Сладкие завтраки и каши|Гранола с манго и персиком|чиа-пудинг;персик;соус манго;гранола (овсянка, мёд, кешью, грецкий орех, лепестки миндаля);фисташки
+d23|Сладкие завтраки и каши|Вафли с вишней и шоколадным крамблом|венские вафли;крем тирамису;вишневое варенье;фисташки;шоколадный крамбл
+d24|Сладкие завтраки и каши|Вафли с бананом и нутеллой|венские вафли;нутелла;мороженое;грецкий орех;банан
+d25|Супы|Куриный суп с фрикадельками|куриные фрикадельки;куриный бульон;макароны алфавит;укроп
+d26|Супы|Сырный рамен|куриный бульон;рамен;сыр чеддер;соевый соус;кунжутное масло;яйцо;куриное филе;шпинат;зеленый лук;кунжут;сливки
+d27|Супы|Том Ям|семга с/м;шампиньоны;томаты черри;паста том-ям;рыбный соус;лайм;имбирь;рис;креветки 3 шт;кокосовое молоко;шпинат;кинза;кунжут
+d28|Салаты|Салат со свежими овощами и сыром|помидоры;огурцы;микс салата;печеный перец;домашний дрессинг;сыр фета;тыквенные семечки
+d29|Салаты|Салат с манго и креветками|микс салата;сыр фета;манго;томаты черри;креветки 4 шт;соевый соус;соус манго
+d30|Салаты|Боул с красной рыбой|семга с/м;рис;брокколи;томаты черри;микс салата;кукуруза;огурцы;соус (ореховый или имбирный);гуакамоле
+d31|Салаты|Боул салат с цыпленком терияки и киноа|томаты черри;куриное филе;красное киноа;соус терияки;гуакамоле;соус дзадзики;оливковое масло;микс салата
+d32|Салаты|Боул салат с креветками|рис;креветки 4 шт;кукуруза;огурцы;гуакамоле;соус унаги;имбирный соус;томаты черри;микс салата;лайм;кунжут;лимонный сок;оливковое масло
+d33|Закуски|Сэндвич с хрустящей курицей|бриошь;соус цезарь;сырный соус;шпинат;курица в панировке;помидоры;фри (батат);соус на выбор (кетчуп, сырный или дзадзики)
+d34|Сладкие завтраки и каши|Креп с творогом и вишней|креп;творожная масса;вишневое варенье;крем тирамису;фисташки
+d35|Закуски|Креп с индейкой и сыром|креп;огурцы;помидоры;микс салата;соус цезарь;копченая индейка;сыр чеддер;сметана
+d36|Закуски|Креп с курицей и грибами|креп;крем-чиз с шампиньонами;микс салата;огурцы;помидоры;куриное филе;соус цезарь;сметана
+d37|Закуски|Креп с лососем и соусом унаги|креп;семга с/м;микс салата;ореховый соус;соус унаги;кунжут;маринованные огурцы
+d38|Закуски|Мини-бургеры|котлеты 2 шт;соус марина роуз;помидоры;микс салата;соус на выбор (кетчуп, сырный или дзадзики);приправа для картофеля;картофель фри;булочки для мини-бургеров 2 шт
+d39|Горячее|Куриное филе с картофелем и грибами|картофель;куриное филе;репчатый лук;чеснок;микс орехов;сливки;шампиньоны;микрозелень
+d40|Горячее|Паста фетучини с курицей и шпинатом|куриное филе;шпинат;чеснок;репчатый лук;сливки;паста фетучини;сыр пармезан;микрозелень
+d41|Горячее|Бефстроганов с картофельным пюре|филе говядины;шампиньоны;репчатый лук;сливки;соленые огурцы;микс орехов;картофельное пюре;зеленый лук
+d42|Горячее|Говяжьи котлеты с морковным пюре|говяжьи котлеты 3 шт;морковное пюре;микс салата;соленые огурцы;микс орехов
+d43|Хлеб|Хлебная корзина|чиабатта 2 шт;тартин;сливочное масло
+d44|Закуски|Картофель фри|картофель фри;приправа для картофеля
+d45|Закуски|Фри батат|фри (батат)
+d46|Горячее|Запеченый завтрак с лососем|болгарский перец;брокколи;шпинат;яйцо 2 шт;сливки;томаты черри;сыр моцарелла;семга с/м;микс салата;тартин;гуакамоле
+d47|Горячее|Куриный шницель с томатным соусом|куриный шницель;пицца-соус;репчатый лук;чеснок;томаты черри;микс салата;соус цезарь;сыр пармезан;орегано`;
+
+const clean=x=>String(x).replace(/[<>"'`\\]/g,"").replace(/[|\r\n]/g," ").replace(/\s+/g," ").trim();
+const esc=x=>String(x).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+function parseDB(t){const L=[];let up="",mx=0;for(const raw of String(t).split("\n")){const l=raw.trim();if(!l)continue;if(l[0]=="#"){let m=l.match(/^#updated\s+(\S+)/);if(m)up=m[1];m=l.match(/^#maxid\s+(\d+)/);if(m)mx=+m[1];continue}const p=l.split("|");L.push({id:clean(p[0]||""),c:clean(p[1]||""),n:clean(p[2]||""),i:(p[3]||"").split(";").map(clean).filter(Boolean),t:clean(p[4]||"")})}return{L,up,mx}}
+const D=[];
+const GR=["Сеты завтраков", "Завтраки", "Сладкие завтраки и каши", "Салаты", "Супы", "Горячее", "Закуски", "Хлеб"];
+let WARN="",MAXID=0,DBUP="";
+function setDB(L,up,mx){D.length=0;D.push(...L);DBUP=up||"";MAXID=Math.max(mx||0,...D.map(d=>+((d.id.match(/\d+/)||[0])[0])));all.length=0;all.push(...new Set(D.flatMap(d=>d.i)));AL.length=0;AL.push(...[...all].sort((a,b)=>a.localeCompare(b,"ru")));const dup=[...new Set(D.map(d=>d.id).filter((x,i,a)=>a.indexOf(x)!=i))],bg=D.filter(d=>!GR.includes(d.c)).map(d=>d.n);WARN=(dup.length||bg.length)?`<div class="card bad">⚠ Ошибка в базе блюд.${dup.length?` Повторяются ID: ${dup.join(", ")}.`:""}${bg.length?` Неизвестная группа у: ${bg.join(", ")}.`:""}</div>`:"";deck=null}
+const all=[],AL=[],$=s=>document.querySelector(s),app=$("#app");
+const sh=a=>[...a].sort(()=>Math.random()-.5),pick=a=>a[Math.random()*a.length|0];
+let S=null;try{S=JSON.parse(localStorage.getItem("mt"))}catch(e){}
+S=S&&S.p?S:{cur:"Я",f:"all",p:{"Я":{w:{},ex:[]}}};
+S.dif=S.dif||"norm";if(S.f!="all"&&S.f!="weak"&&!GR.includes(S.f))S.f="all";const PT=10,DF={easy:[45,.5,"Легкий"],norm:[30,1,"Нормальный"],hard:[15,1.5,"Сложный"]};
+const save=()=>{try{localStorage.setItem("mt",JSON.stringify(S))}catch(e){}},P=()=>S.p[S.cur];
+if(S.v!=2){for(const p of Object.values(S.p)){p.w={};p.ex=[];p.m={};p.pts=0}S.v=2;save()}
+const weak=d=>{const w=P().w[d.id];return !!w&&(!w.l||w.ok/w.n<.7)};
+const pool=()=>{const f=S.f,r=D.filter(d=>f=="all"||(f=="weak"?weak(d):d.c==f));return r.length?r:D};
+const rec=(d,r)=>{const w=P().w[d.id]||(P().w[d.id]={ok:0,n:0,l:1});w.n++;w.ok+=r?1:0;w.l=r?1:0;save()};
+const M=[["cards","Карточки"],["build","Состав"],["guess","Угадай"],["exam","Экзамен"],["tests","Тесты"],["ref","Справочник"],["stats","Статистика"]];
+let mode="cards",tq=false,score={ok:0,n:0},st={},deck=null,flip=false,timerOn=false,tm,left=0,run=false,ex=null,addP=false,cf={};const R={};
+const dsel=()=>`<select onchange="sd(this.value)" style="margin-left:8px">${Object.entries(DF).map(([k,[t,c,n]])=>`<option value=${k} ${S.dif==k?"selected":""}>${n} · ${t} с · ×${c}</option>`).join("")}</select>`;
+function sd(v){S.dif=v;save();R[mode]()}
+function addPts(p){score.pts=(score.pts||0)+p;score.last=p;P().pts=(P().pts||0)+p;save()}
+const stop=()=>{clearInterval(tm);run=false};
+const go=m=>{stop();tq=false;ex=null;cf={};mode=m;R[m]()};
+const rst=()=>{stop();ex=null;deck=null;R[mode]()};
+const sp=v=>{S.cur=v;save();score={ok:0,n:0};rst()},sf=v=>{S.f=v;save();rst()};
+function np(){const n=$("#np").value.trim().slice(0,20);if(n){if(!S.p[n])S.p[n]={w:{},ex:[]};S.cur=n;score={ok:0,n:0}}addP=false;save();rst()}
+function tick(){const e=$("#tm");if(e&&run)e.textContent="⏱ "+left+" с"}
+function show(h){const q=mode=="build"||mode=="guess";
+app.innerHTML=`<div class=hdr><div class=ver>v${VER} · ${VDATE}</div>Тренажёр меню</div>${WARN}<div class=bar>${addP?`<input id=np placeholder="Имя профиля" style="margin:0;flex:1"><button class=p onclick="np()">OK</button>`:`<select onchange="sp(this.value)">${Object.keys(S.p).map(n=>`<option ${n==S.cur?"selected":""}>${n}</option>`).join("")}</select><button onclick="addP=true;R[mode]()">＋</button>`}<select onchange="sf(this.value)"><option value=all>Все блюда</option><option value=weak ${S.f=="weak"?"selected":""}>⚠ Слабые (${D.filter(d=>weak(d)).length})</option>${GR.map(k=>`<option ${S.f==k?"selected":""}>${k}</option>`).join("")}</select></div><div class=tabs>${(CAN?[...M,["edit","Редактор"+(edDirty()?" ●":"")]]:M).map(([k,t])=>`<button class="${k==mode?"on":""}" onclick="go('${k}')">${t}</button>`).join("")}</div>`+((q||tq)?`<div class=sc>Сессия: ${score.ok}/${score.n} · ★ ${score.pts||0}${score.last?` (+${score.last})`:""} <b id=tm></b></div>`:"")+h;tick()}
+R.cards=()=>{stop();if(!deck)deck=sh(pool());if(!deck.length)return show(`<div class="card big"><h2>Готово!</h2><p class=m>Все карточки пройдены</p></div><button class=p style="width:100%" onclick="rst()">Заново</button>`);
+const d=deck[0];show(`<div class=sc>Осталось: ${deck.length}${weak(d)?" · ⚠ слабое блюдо":""}</div><div class="card big" onclick="flip=!flip;R.cards()">${flip?`<h2 style="font-size:17px">${d.n}</h2><ul>${d.i.map(x=>`<li>${x}</li>`).join("")}</ul>`:`<h2>${d.n}</h2><p class=m>Нажми, чтобы увидеть состав</p>`}</div><div class=row><button onclick="nx(0)">Повторить</button><button class=p onclick="nx(1)">Знаю</button></div>`)};
+function nx(k){const d=deck.shift();rec(d,k);if(!k)deck.push(d);flip=false;R.cards()}
+function newQ(type){stop();const d=ex?ex.q[ex.i]:pick(pool());
+if(type=="build"){const fam=x=>x.replace(/ \d+ шт/,"").replace(/ (х\/к|с\/м)$/,""),tw=sh(all.filter(x=>!d.i.includes(x)&&d.i.some(y=>fam(y)==fam(x)))).slice(0,2),e=[...tw,...sh(all.filter(x=>!d.i.includes(x)&&!tw.includes(x))).slice(0,Math.max(4,d.i.length)-tw.length)];st={type,d,o:sh([...d.i,...e]),s:new Set(),done:0}}
+else{const ov=x=>x.i.filter(y=>d.i.includes(y)).length,top=D.filter(x=>x!=d).sort((a,b)=>ov(b)-ov(a)).slice(0,8);st={type,d,o:sh([...sh(top).slice(0,3),d]),a:null,done:0}}
+draw();if(ex){left=DF[S.dif][0];run=true;tm=setInterval(()=>{left--;tick();if(left<=0)st.type=="build"?chk(1):fin(false,-1)},1000);tick()}}
+R.build=()=>newQ("build");R.guess=()=>newQ("guess");
+function draw(){const{type,d,o,done,a}=st,hd=ex?`<div class=sc>Вопрос ${ex.i+1} из ${ex.q.length} <b id=tm></b></div>`:"";
+if(type=="build")show(hd+`<div class=card><h2>${d.n}</h2><p class=m>Выбери все ингредиенты блюда</p><div class=chips>${o.map((x,i)=>{const n=d.i.includes(x),e=st.s.has(x);const c=done?(n&&e?"ok":n?"miss":e?"bad":""):e?"sel":"";return`<button class="chip ${c}" onclick="tg(${i})">${x}</button>`}).join("")}</div></div><div class=row>${done?`<button class=p onclick="R.build()">Дальше</button>`:`<button class=p onclick="chk()">Проверить</button>`}</div>`);
+else show(hd+`<div class=card><p class=m>Какое это блюдо?</p><div class=chips style="margin:0 0 4px">${sh(d.i).map(x=>`<span class=chip style="border:1px solid var(--bd)">${x}</span>`).join("")}</div></div><div class=opts>${o.map((x,i)=>`<button class="${done?(x==d?"ok":i==a?"bad":""):""}" onclick="an(${i})">${x.n}</button>`).join("")}</div>${done?`<button class=p style="width:100%" onclick="R.guess()">Дальше</button>`:""}`)}
+function tg(i){if(st.done)return;const x=st.o[i];st.s.has(x)?st.s.delete(x):st.s.add(x);draw();tick()}
+function chk(t){const{d,s}=st;fin(d.i.length==s.size&&d.i.every(x=>s.has(x)),t?-1:undefined)}
+function an(i){if(!st.done)fin(st.o[i]==st.d,i)}
+function fin(r,i){if(st.done)return;st.done=1;stop();rec(st.d,r);const pt=r?Math.round(PT*(ex?DF[S.dif][1]:1)):0;addPts(pt);score.n++;score.ok+=r?1:0;if(ex){ex.pts=(ex.pts||0)+pt;const q=st,b=q.type=='build';ex.res.push({d:q.d,r,type:q.type,to:i===-1,miss:b?q.d.i.filter(x=>!q.s.has(x)):[],extra:b?[...q.s].filter(x=>!q.d.i.includes(x)):[],pick:!b&&i>=0?q.o[i].n:'',sel:b?[...q.s]:[]});return exNext()}st.a=i;draw()}
+const exRow=e=>`<div class=r><span>${new Date(e.t).toLocaleDateString("ru")} · ${e.f=="all"?"Все":e.f=="weak"?"Слабые":e.f}</span><b>${e.ok}/${e.n} · ${Math.round(e.ok/e.n*100)}% · ${e.s} с${e.p!=null?` · ★ ${e.p}`:""}</b></div>`;
+R.exam=()=>{stop();const h=P().ex.slice(-5).reverse();show(`<div class=card><h2>Экзамен</h2><p class=m>${Math.min(15,pool().length)} вопросов по выбранному фильтру: «Состав» и «Угадай» по очереди, время на вопрос зависит от выбранной сложности, без подсказок. Результат виден в конце. Зачёт — от 80%. За верный ответ ${PT} очков × коэффициент сложности: ×0.5 / ×1 / ×1.5.</p><div>${dsel()}</div></div><button class=p style="width:100%" onclick="exStart()">Начать</button>`+(h.length?`<h3>Последние попытки</h3>`+h.map(exRow).join(""):""))};
+function exStart(){ex={q:sh(pool()).slice(0,15),i:0,res:[],t0:Date.now()};newQ("build")}
+function exNext(){ex.i++;ex.i<ex.q.length?newQ(ex.i%2?"guess":"build"):exEnd()}
+function exEnd(){const r=ex.res,ok=r.filter(x=>x.r).length,n=r.length,s=Math.round((Date.now()-ex.t0)/1000),pc=Math.round(ok/n*100),bad=r.filter(x=>!x.r);
+const xp=ex.pts||0;P().ex.push({t:Date.now(),ok,n,s,f:S.f,p:xp,d:S.dif});save();ex=null;
+show(`<div class=card style="text-align:center"><h2>${pc>=80?"Зачёт":"Не сдан"}</h2><p>${ok} из ${n} · ${pc}% · ${s} с · ★ ${xp}</p></div>`+(bad.length?`<h3>Ошибки</h3>`+bad.map(x=>`<div class=card><b>${x.d.n}</b> <span class=m>· ${x.type=='guess'?'угадать блюдо':'собрать состав'}</span>${x.to?`<p class=m>⏱ Время вышло</p>`:''}${x.type=='guess'?`<p>Вы выбрали: <span style="color:var(--bad)">${x.pick||'—'}</span></p>`:`${x.miss.length?`<p>Пропущено: <span style="color:var(--ok)">${x.miss.join(', ')}</span></p>`:''}${x.extra.length?`<p>Лишнее: <span style="color:var(--bad)">${x.extra.join(', ')}</span></p>`:''}`}${x.type=='build'?`<p class=m>Вы отметили: ${x.sel.join(', ')||'ничего'}</p>`:''}<p class=m>Правильный состав: ${x.d.i.join(' · ')}</p></div>`).join(""):"")+`<div class=row><button class=p onclick="R.exam()">Ещё раз</button><button onclick="S.f='weak';save();go('cards')">Учить слабые</button></div>`)}
+R.ref=()=>{stop();show(`<input id=q placeholder="Поиск по блюду или ингредиенту" oninput="lst()"><div id=l></div>`);lst()};
+function lst(){const q=$("#q").value.toLowerCase();$("#l").innerHTML=D.filter(d=>(d.n+d.i).toLowerCase().includes(q)).map(d=>`<details><summary>${d.n}</summary><p>${d.i.join(" · ")}</p></details>`).join("")}
+const dbl=(k,f)=>{if(cf[k]){cf={};f()}else{cf={[k]:1}}R.stats()};
+R.stats=()=>{stop();const w=P().w,rows=D.filter(d=>w[d.id]).sort((a,b)=>w[a.id].ok/w[a.id].n-w[b.id].ok/w[b.id].n),T=rows.reduce((a,d)=>a+w[d.id].n,0),O=rows.reduce((a,d)=>a+w[d.id].ok,0);
+show(`<div class=card><h2>${S.cur}</h2><p class=m>★ Очков: ${P().pts||0} · Ответов: ${T} · верно: ${T?Math.round(O/T*100):0}% · изучено блюд: ${rows.length} из ${D.length} · слабых: ${D.filter(d=>weak(d)).length}</p></div><h3>Тесты</h3>${Object.entries(TN).map(([k,t])=>{const m=(P().m||{})[k];return m?`<div class=r><span>${t}</span><b>${m.ok}/${m.n}</b></div>`:""}).join("")||"<p class=m>Пока нет</p>"}<h3>Экзамены</h3>${P().ex.length?P().ex.slice(-5).reverse().map(exRow).join(""):`<p class=m>Пока нет</p>`}<h3>По блюдам (сначала слабые)</h3>${rows.map(d=>`<div class=r><span>${weak(d)?"⚠ ":""}${d.n}</span><b>${w[d.id].ok}/${w[d.id].n}</b></div>`).join("")||`<p class=m>Пока нет данных</p>`}<div class=row style="margin-top:16px"><button onclick="dbl('r',()=>{P().w={};P().ex=[];save()})">${cf.r?"Точно сбросить?":"Сбросить статистику"}</button>${Object.keys(S.p).length>1?`<button onclick="dbl('d',()=>{delete S.p[S.cur];S.cur=Object.keys(S.p)[0];save();deck=null})">${cf.d?"Точно удалить?":"Удалить профиль"}</button>`:""}</div>`)};
+/* ===== Тесты ===== */
+const NUTS=x=>/орех|кешью|фисташк|миндал|нутелла/.test(x),BREAD=x=>/тартин|бриошь|чиабатта|^пита|симит|булочки/.test(x);
+const G={"Рыба":x=>/^семга/.test(x),"Креветки":x=>/^креветки/.test(x),"Яйцо":x=>/^яйцо/.test(x),"Мясо":x=>/колбаск|ветчин|конина|казы|индейк|куриное филе|куриные|курица|котлеты|говяжьи|филе говядины/.test(x),"Курица":x=>/куриное филе|куриные|куриная|курица/.test(x),"Индейка":x=>/индейк/.test(x),"Грибы":x=>/шампиньон/.test(x),"Сыр":x=>/(^сыр | сыр$)/.test(x),"Шпинат":x=>/шпинат/.test(x),"Гуакамоле":x=>/гуакамоле/.test(x),"Манго":x=>/манго/.test(x)};
+const GS=Object.keys(G),has=(d,f)=>d.i.find(f),CARB=/картофел|батат|^рис|паста|гречка|овсянка|макароны|пюре|хашбраун|бриошь|^пита|чиабатта|булочки|тартин|симит|^креп|вафл|сырники|рамен|киноа/;
+const qty=x=>+((x.match(/(\d+) шт/)||[0,1])[1]),wm=(o,f)=>Object.fromEntries(o.map(d=>[d.id,f(d)]));
+const hf=d=>d.i.reduce((s,x)=>s+(G["Мясо"](x)||G["Рыба"](x)?3*Math.min(qty(x),2):G["Креветки"](x)?3:G["Яйцо"](x)?qty(x):CARB.test(x)?2:.3),0);
+const mk={
+same(){const g=pick(GS),f=G[g],y=D.filter(d=>has(d,f)),n=D.filter(d=>!has(d,f));if(y.length<3)return;const A=sh(y).slice(0,3),o=sh([...A,pick(n)]);return{p:`Выбери 3 блюда, где есть: ${g.toLowerCase()}`,o,a:new Set(A),m:1,w:wm(o,d=>has(d,f)||"нет")}},
+bread(){const y=D.filter(d=>!has(d,BREAD)),n=D.filter(d=>has(d,BREAD)),k=2+(Math.random()*2|0),A=sh(y).slice(0,k),o=sh([...A,...sh(n).slice(0,5-k)]);return{p:"Выбери все блюда, где нет хлеба",o,a:new Set(A),m:1,w:wm(o,d=>has(d,BREAD)||"хлеба нет")}},
+allergen(){const g=pick(["Орехи","Орехи","Рыба","Креветки"]),f=g=="Орехи"?NUTS:G[g],y=D.filter(d=>has(d,f)),n=D.filter(d=>!has(d,f)),k=Math.min(y.length,1+(Math.random()*3|0)),A=sh(y).slice(0,k),o=sh([...A,...sh(n).slice(0,5-k)]);return{p:`Выбери все блюда с аллергеном: ${g.toLowerCase()}`,o,a:new Set(A),m:1,w:wm(o,d=>has(d,f)||"нет")}},
+diet(){const A=D.filter(d=>d.t=="без жарки"),B=D.filter(d=>d.t=="жарка");if(!A.length||!B.length)return;const a=pick(A),o=sh([a,...sh(B).slice(0,3)]);return{p:"Какое блюдо самое диетическое? (без жарки на масле и фритюра)",o,a:new Set([a]),m:0,w:wm(o,d=>d.t=="без жарки"?"без жарки":"жарка / фритюр")}},
+heft(){const o=sh(D).slice(0,4).sort((a,b)=>hf(b)-hf(a));if(hf(o[0])-hf(o[1])<2.5)return;const t=sh(o);return{p:"Какое блюдо самое сытное? (больше порция и мяса)",o:t,a:new Set([o[0]]),m:0,w:wm(t,d=>"сытность ≈ "+hf(d).toFixed(0))}}};
+const TN={fill:"Впиши состав",same:"3 из 4",bread:"Без хлеба",allergen:"Аллергены",diet:"Диетическое",heft:"Сытное"},TD={fill:"Собери состав блюда из выпадающего списка",same:"Найди 3 блюда из 4 с общим ингредиентом",bread:"Отметь блюда без хлеба",allergen:"Отметь блюда с аллергеном",diet:"Выбери самое диетическое (тест)",heft:"Выбери самое сытное (тест)"};
+R.tests=()=>{stop();tq=false;show(`<div class=opts>${Object.entries(TN).map(([k,t])=>`<button onclick="tk('${k}')"><b>${t}</b><div class=m>${TD[k]}</div></button>`).join("")}</div>`)};
+function tk(k){if(k=="fill")return fillQ();stop();tq=true;let q;for(let t=0;t<300&&!q;t++)q=mk[k]();if(!q){show(`<div class=card><p class=m>Для этого теста в базе пока не хватает подходящих блюд.</p></div>`);return}st={k,done:0,s:new Set(),...q};drawT()}
+function drawT(){const{p,o,a,m,s,done,w}=st;show(`<div class=card><h2 style="font-size:18px">${p}</h2><p class=m>${m?"Можно выбрать несколько":"Выбери один вариант"}</p></div><div class=opts>${o.map((d,i)=>{const e=s.has(d),n=a.has(d),c=done?(n&&e?"ok":n?"miss":e?"bad":""):"";return`<button class="${c}" style="${!done&&e?"border-color:var(--fg);box-shadow:inset 0 0 0 1px var(--fg)":""}" onclick="tp(${i})">${d.n}${done?`<div class=m>${w[d.id]}</div>`:""}</button>`}).join("")}</div>${done?`<button class=p style="width:100%" onclick="tk(st.k)">Дальше</button>`:m?`<button class=p style="width:100%" onclick="tc()">Проверить</button>`:""}`)}
+function tp(i){if(st.done)return;const d=st.o[i];if(!st.m){st.s=new Set([d]);return tc()}st.s.has(d)?st.s.delete(d):st.s.add(d);drawT()}
+function tc(){const{s,a,k}=st;if(st.done)return;st.done=1;const r=s.size==a.size&&[...a].every(x=>s.has(x)),m=(P().m||(P().m={}))[k]||(P().m[k]={ok:0,n:0});m.n++;m.ok+=r?1:0;score.n++;score.ok+=r?1:0;addPts(r?PT:0);drawT()}
+
+/* ===== Впиши состав ===== */
+const nz=x=>x.toLowerCase().replace(/ё/g,"е");
+const fFocus=()=>{const e=$("#fi");if(e&&e.focus)e.focus({preventScroll:true})};
+function fillQ(){stop();tq=true;st={k:"fill",d:pick(pool()),s:[],done:0,q:"",hi:0,m:[]};drawF();fFocus()}
+function fm(){const q=nz(st.q.trim()),l=AL.filter(x=>!st.s.includes(x));if(!q)return l;
+const sc=x=>{const n=nz(x),k=n.indexOf(q);return k<0?-1:k==0?0:/[\s(]/.test(n[k-1])?1:2};
+return l.map(x=>[x,sc(x)]).filter(a=>a[1]>=0).sort((a,b)=>a[1]-b[1]).map(a=>a[0])}
+const hl=(x,q)=>{q=q.trim();const k=q?nz(x).indexOf(nz(q)):-1;return k<0?x:x.slice(0,k)+"<mark>"+x.slice(k,k+q.length)+"</mark>"+x.slice(k+q.length)};
+function fList(nav){const e=$("#sg");if(!e)return;const m=fm();st.m=m;st.hi=Math.max(0,Math.min(st.hi,m.length-1));
+e.innerHTML=m.length?m.map((x,k)=>`<button class="${k==st.hi?"hi":""}" onmousedown="event.preventDefault()" onclick="fa(${k})">${hl(x,st.q)}</button>`).join(""):`<div class=m style="padding:10px 12px">Такого ингредиента нет в меню</div>`;
+if(nav&&e.querySelector){const h=e.querySelector(".hi");if(h&&h.scrollIntoView)h.scrollIntoView({block:"nearest"})}}
+function fk(e){const n=st.m.length;if(e.key=="ArrowDown"){e.preventDefault();st.hi=Math.min(st.hi+1,n-1);fList(1)}else if(e.key=="ArrowUp"){e.preventDefault();st.hi=Math.max(st.hi-1,0);fList(1)}else if(e.key=="Enter"){e.preventDefault();if(n)fa(st.hi)}else if(e.key=="Escape"){st.q="";st.hi=0;$("#fi").value="";fList()}}
+function drawF(){const{d,s,done}=st;
+const chips=s.map((x,k)=>`<button class="chip ${done?(d.i.includes(x)?"ok":"bad"):"sel"}" ${done?"":`onclick="fr(${k})"`}>${x}${done?"":" ✕"}</button>`).join(""),miss=done?d.i.filter(x=>!s.includes(x)):[];
+show(`<div class=card><h2>${d.n}</h2><p class=m>${done?`<b>${st.r?"Верно!":"Есть ошибки"}</b> · зелёные верно, красные лишние, пунктир пропущено`:"Вводи часть названия и выбирай ингредиент из списка. Чтобы убрать выбранный, нажми на него."}</p><div class=chips style="margin:0 0 12px">${chips||`<span class=m>Пока пусто</span>`}</div>${done?"":`<input id=fi placeholder="Введи часть названия…" autocomplete=off autocapitalize=off spellcheck=false oninput="st.q=this.value;st.hi=0;fList()" onkeydown="fk(event)"><div class=sug id=sg></div>`}${miss.length?`<p style="margin:12px 0 0">Пропущено:</p><div class=chips>${miss.map(x=>`<span class="chip miss">${x}</span>`).join("")}</div>`:""}</div>`+(done?`<button class=p style="width:100%" onclick="fillQ()">Дальше</button>`:`<button class=p style="width:100%" onclick="fc()" ${s.length?"":"disabled"}>Проверить</button>`));
+if(!done){$("#fi").value=st.q;fList()}}
+function fa(k){const x=st.m[k];if(x==null||st.done)return;st.s.push(x);st.q="";st.hi=0;drawF();fFocus()}
+function fr(k){if(st.done)return;st.s.splice(k,1);drawF()}
+function fc(){const{d,s}=st;if(st.done||!s.length)return;st.done=1;const r=s.length==d.i.length&&d.i.every(x=>s.includes(x));st.r=r;rec(d,r);const m=(P().m||(P().m={})).fill||(P().m.fill={ok:0,n:0});m.n++;m.ok+=r?1:0;score.n++;score.ok+=r?1:0;addPts(r?PT:0);drawF()}
+
+/* ===== Редактор базы ===== */
+let CAN=false,DBSRC="встроенная копия (файл menu.txt не загрузился)",E=null;
+const clone=L=>L.map(d=>({...d,i:[...d.i]})),idn=d=>+((d.id.match(/\d+/)||[0])[0]);
+const ymd=()=>{const t=new Date(),p=n=>String(n).padStart(2,"0");return t.getFullYear()+"-"+p(t.getMonth()+1)+"-"+p(t.getDate())};
+const ser=(L,up)=>["# Тренажёр меню: база блюд","# Строка: ID|Группа|Название|ингредиенты через ;|для теста «Диетическое» (необязательно: без жарки или жарка)","#updated "+up,"#maxid "+Math.max(MAXID,...L.map(idn)),...L.map(d=>[d.id,d.c,d.n,d.i.join(";"),d.t||""].join("|").replace(/\|+$/,""))].join("\n")+"\n";
+const nextId=L=>"d"+String(Math.max(MAXID,...L.map(idn))+1).padStart(2,"0");
+function edDirty(){return !!E&&JSON.stringify(E.L)!=JSON.stringify(D)}
+function edInit(L){E={L:clone(L),view:"list",cur:null,f:"",q:"",hi:0,m:[],msg:"",ok:0,del:0,ren:{from:"",to:""},txt:""}}
+const edPool=()=>[...new Set(E.L.flatMap(d=>d.i))].sort((a,b)=>a.localeCompare(b,"ru"));
+const cbm=(pool,q)=>{q=nz(q.trim());if(!q)return pool;const sc=x=>{const n=nz(x),k=n.indexOf(q);return k<0?-1:k==0?0:/[\s(]/.test(n[k-1])?1:2};return pool.map(x=>[x,sc(x)]).filter(a=>a[1]>=0).sort((a,b)=>a[1]-b[1]).map(a=>a[0])};
+function edCheck(L){const er=[],ids=new Set(),nm=new Set();for(const d of L){if(!d.n)er.push("у блюда "+d.id+" нет названия");if(ids.has(d.id))er.push("повторяется ID "+d.id);ids.add(d.id);if(nm.has(nz(d.n)))er.push("два блюда с названием «"+d.n+"»");nm.add(nz(d.n));if(!d.i.length)er.push("в блюде «"+d.n+"» нет ингредиентов");if(!GR.includes(d.c))er.push("у блюда «"+d.n+"» не выбрана группа")}return er}
+R.edit=()=>{stop();if(!CAN){go("cards");return}if(!E)edInit(D);drawE()};
+function drawE(){const v=E.view,msg=E.msg?`<div class="card ${E.ok?"ok":"bad"}" style="padding:12px 16px">${E.msg}</div>`:"",dirty=edDirty(),back=`<button onclick="edBack()" style="margin-bottom:10px">← К списку</button>`;let h="";
+if(v=="list")h=`<div class=card><h2>Редактор меню</h2><p class=m>База: ${DBSRC}${DBUP?" от "+DBUP:""} · блюд: ${E.L.length}. Остальные увидят правки только после «Сохранить для всех».</p></div>${msg}<div class=row style="margin-bottom:10px"><button onclick="edNew()">＋ Блюдо</button><button onclick="E.view='ren';E.msg='';drawE()">Ингредиент везде</button><button onclick="edTxt()">Текст базы</button></div><input id=ef placeholder="Найти блюдо или ингредиент" value="${esc(E.f)}" oninput="E.f=this.value;edRows()" autocomplete=off><div id=er></div><div class=row style="margin-top:12px"><button class=p onclick="edSave()" ${dirty?"":"disabled"}>Сохранить для всех</button><button onclick="edReset()" ${dirty?"":"disabled"}>Отменить правки</button></div>`;
+else if(v=="dish"){const d=E.cur;h=`${back}${msg}<div class=card><label class=f for=en>Название</label><input id=en value="${esc(d.n)}" oninput="E.cur.n=this.value" autocomplete=off><label class=f for=eg>Группа</label><select id=eg class=w onchange="E.cur.c=this.value">${GR.includes(d.c)?"":`<option value="" selected>выбери группу</option>`}${GR.map(g=>`<option ${g==d.c?"selected":""}>${g}</option>`).join("")}</select><label class=f for=et>Тест «Диетическое»</label><select id=et class=w onchange="E.cur.t=this.value"><option value="" ${d.t?"":"selected"}>не участвует</option><option value="без жарки" ${d.t=="без жарки"?"selected":""}>без жарки на масле и фритюра</option><option value="жарка" ${d.t=="жарка"?"selected":""}>есть жарка или фритюр</option></select><label class=f>Состав · ${d.i.length}</label><div class=chips style="margin:0 0 12px">${d.i.map((x,k)=>`<button class=chip onclick="edRm(${k})">${esc(x)} ✕</button>`).join("")||`<span class=m>Пока пусто</span>`}</div><label class=f for=ei>Добавить ингредиент</label><input id=ei placeholder="Введи часть названия…" autocomplete=off autocapitalize=off spellcheck=false oninput="E.q=this.value;E.hi=0;eList()" onkeydown="eKey(event)"><div class=sug id=es></div></div><button onclick="edDel()" style="color:var(--bad)">${E.del?"Точно удалить блюдо?":"Удалить блюдо"}</button>`}
+else if(v=="ren"){const p=edPool(),f=p.includes(E.ren.from)?E.ren.from:(p[0]||"");E.ren.from=f;h=`${back}${msg}<div class=card><h2 style="font-size:18px">Ингредиент везде</h2><p class=m>Заменяет название ингредиента сразу во всех блюдах. Если новое название уже есть в блюде, дубль не появится.</p><label class=f for=rf>Было</label><select id=rf class=w onchange="E.ren.from=this.value;edRC()">${p.map(x=>`<option ${x==f?"selected":""}>${esc(x)}</option>`).join("")}</select><p class=m id=rc></p><label class=f for=rt>Станет</label><input id=rt value="${esc(E.ren.to)}" oninput="E.ren.to=this.value" placeholder="Новое название" autocomplete=off><button class=p style="width:100%" onclick="edRen()">Заменить везде</button></div>`}
+else h=`${back}${msg}<div class=card><h2 style="font-size:18px">Текст базы</h2><p class=m>Скопируй базу, поправь в блокноте и вставь обратно. «Применить текст» кладёт правки в черновик, после этого их нужно сохранить.</p><textarea id=et2 spellcheck=false rows=14></textarea><p class=m id=ecm></p><div class=row><button onclick="edCopy()">Скопировать</button><button class=p onclick="edApply()">Применить текст</button></div></div>`;
+show(h);if(v=="list")edRows();else if(v=="dish")eList();else if(v=="ren")edRC();else{const t=$("#et2");if(t)t.value=E.txt}}
+function edRows(){const e=$("#er");if(!e)return;const q=nz(E.f||""),ok=d=>!q||nz(d.n+" "+d.i.join(" ")).includes(q),mk=d=>{const o=D.find(x=>x.id==d.id);return !o?"＋ ":JSON.stringify(o)!=JSON.stringify(d)?"● ":""};
+e.innerHTML=[...GR,"Без группы"].map(g=>{const ds=E.L.filter(d=>(g=="Без группы"?!GR.includes(d.c):d.c==g)&&ok(d));return ds.length?`<h3>${g} · ${ds.length}</h3>`+ds.map(d=>`<button class=erow onclick="edOpen('${d.id}')"><span>${mk(d)}${esc(d.n)}</span><span class=m>${d.i.length}</span></button>`).join(""):""}).join("")||`<p class=m>Ничего не найдено</p>`}
+function edOpen(id){E.cur=E.L.find(d=>d.id==id);if(!E.cur)return;E.view="dish";E.q="";E.hi=0;E.msg="";E.del=0;drawE()}
+function edBack(){E.view="list";E.cur=null;E.q="";E.msg="";E.del=0;drawE()}
+function edNew(){const d={id:nextId(E.L),c:"Завтраки",n:"Новое блюдо",i:[],t:""};MAXID=Math.max(MAXID,idn(d));E.L.push(d);E.cur=d;E.view="dish";E.q="";E.hi=0;E.msg="";E.del=0;drawE();const i=$("#en");if(i){i.focus();i.select()}}
+function edRm(k){E.cur.i.splice(k,1);E.msg="";drawE()}
+function edDel(){if(!E.del){E.del=1;drawE();return}E.L=E.L.filter(d=>d!==E.cur);edBack()}
+function eList(nav){const e=$("#es");if(!e)return;const q=E.q.trim(),cur=E.cur.i,m=cbm(edPool().filter(x=>!cur.includes(x)),E.q).slice(0,40),has=cur.concat(m).some(x=>nz(x)==nz(q)),it=m.map(t=>({t}));if(q&&!has&&clean(q))it.push({t:clean(q),n:1});E.m=it;E.hi=Math.max(0,Math.min(E.hi,it.length-1));
+e.innerHTML=it.length?it.map((x,k)=>`<button class="${k==E.hi?"hi":""}" onmousedown="event.preventDefault()" onclick="eAdd(${k})">${x.n?`＋ Добавить «${esc(x.t)}» как новый`:hl(x.t,E.q)}</button>`).join(""):`<div class=m style="padding:10px 12px">${q?"Такой ингредиент уже в составе":"Начни вводить название"}</div>`;
+if(nav&&e.querySelector){const h=e.querySelector(".hi");if(h&&h.scrollIntoView)h.scrollIntoView({block:"nearest"})}}
+function eKey(e){const n=E.m.length;if(e.key=="ArrowDown"){e.preventDefault();E.hi=Math.min(E.hi+1,n-1);eList(1)}else if(e.key=="ArrowUp"){e.preventDefault();E.hi=Math.max(E.hi-1,0);eList(1)}else if(e.key=="Enter"){e.preventDefault();if(n)eAdd(E.hi)}else if(e.key=="Escape"){E.q="";E.hi=0;$("#ei").value="";eList()}}
+function eAdd(k){const x=E.m[k];if(!x)return;const t=clean(x.t);if(t&&!E.cur.i.includes(t))E.cur.i.push(t);E.q="";E.hi=0;E.msg="";drawE();const i=$("#ei");if(i&&i.focus)i.focus({preventScroll:true})}
+function edRC(){const e=$("#rc");if(e)e.textContent="Встречается в блюдах: "+E.L.filter(d=>d.i.includes(E.ren.from)).length}
+function edRen(){const f=E.ren.from,t=clean(E.ren.to||"");if(!f)return;if(!t||t==f){E.msg=t?"Новое название совпадает со старым":"Введи новое название";E.ok=0;return drawE()}let n=0;E.L.forEach(d=>{if(d.i.includes(f)){d.i=[...new Set(d.i.map(x=>x==f?t:x))];n++}});E.msg=`«${esc(f)}» → «${esc(t)}»: заменено в блюдах: ${n}`;E.ok=1;E.ren={from:t,to:""};drawE()}
+function edTxt(){E.view="txt";E.msg="";E.txt=ser(E.L,ymd());drawE()}
+async function edCopy(){const t=$("#et2");if(!t)return;t.focus();t.select();let m;try{await navigator.clipboard.writeText(t.value);m="Скопировано."}catch(e){m="Автоматически не скопировалось: текст выделен, нажми Ctrl+C."}const c=$("#ecm");if(c)c.textContent=m}
+function edApply(){const t=$("#et2");if(!t)return;const p=parseDB(t.value),er=p.L.length?edCheck(p.L):["в тексте нет ни одного блюда"];if(er.length){E.msg="Текст не применён: "+er.map(esc).join("; ");E.ok=0;E.txt=t.value;return drawE()}E.L=clone(p.L);MAXID=Math.max(MAXID,p.mx,...p.L.map(idn));E.view="list";E.msg="Текст применён. Проверь список и нажми «Сохранить для всех».";E.ok=1;drawE()}
+function edReset(){edInit(D);E.msg="Правки отменены";E.ok=1;drawE()}
+async function edSave(){E.L.forEach(d=>{d.n=clean(d.n);d.c=clean(d.c);d.t=clean(d.t||"");d.i=[...new Set(d.i.map(clean).filter(Boolean))]});
+const er=edCheck(E.L);if(er.length){E.msg="Нельзя сохранить: "+er.map(esc).join("; ");E.ok=0;return drawE()}if(!edDirty()){E.msg="Нет изменений";E.ok=1;return drawE()}
+let art=null;try{art=await window.claude.use("artifact")}catch(e){}
+if(!art){E.msg="Сохранение недоступно в этом окне. Открой «Текст базы», скопируй его и пришли Claude.";E.ok=0;return drawE()}
+const up=ymd(),text=ser(E.L,up);try{sessionStorage.setItem("mtdraft",text)}catch(e){}
+try{await art.publish({"menu.txt":{content:text,contentType:"text/plain"}});const p=parseDB(text);setDB(p.L,up,p.mx);DBSRC="файл menu.txt";try{sessionStorage.removeItem("mtdraft")}catch(e){}edInit(D);E.msg="Сохранено для всех ✓ Остальные увидят новую базу после обновления страницы.";E.ok=1;drawE()}
+catch(e){const c=e&&e.code;if(c!="conflict")try{sessionStorage.removeItem("mtdraft")}catch(x){}E.msg=c=="not_writer"||c=="not_granted"?"У тебя нет права сохранять эту страницу.":c=="capability_disabled"?"Сохранение из страницы недоступно для этой ссылки. Открой «Текст базы», скопируй его и пришли Claude.":c=="conflict"?"Страницу обновили, пока ты редактировал. Окно перезагрузится, правки восстановятся.":c=="rate_limited"?"Слишком часто. Подожди минуту и сохрани снова.":"Не удалось сохранить: "+esc((e&&e.message)||"ошибка")+". Правки остались в черновике.";E.ok=0;drawE()}}
+const addTab=()=>{const t=document.querySelector(".tabs");if(t&&!t.querySelector("[data-ed]"))t.insertAdjacentHTML("beforeend",`<button data-ed onclick="go('edit')">Редактор</button>`)};
+const xhrText=u=>new Promise((ok,no)=>{const x=new XMLHttpRequest();x.open("GET",u);x.onload=()=>ok(x.responseText||null);x.onerror=()=>no(0);x.send()});
+async function loadMenu(){try{const g=location.protocol=="file:"?xhrText("menu.txt"):fetch("menu.txt",{cache:"no-store"}).then(r=>r.ok?r.text():null);return await Promise.race([g,new Promise((_,j)=>setTimeout(()=>j(0),2500))])}catch(e){return null}}
+(async()=>{const p0=parseDB(DB0);setDB(p0.L,p0.up,p0.mx);
+const t=await loadMenu();if(t){const p=parseDB(t);if(p.L.length){setDB(p.L,p.up,p.mx);DBSRC="файл menu.txt"}}
+R[mode]();
+try{const u=window.claude&&window.claude.use?await window.claude.use("user"):null;CAN=!!(u&&await u.canEdit())}catch(e){CAN=false}
+if(CAN){addTab();try{const d=sessionStorage.getItem("mtdraft");if(d){sessionStorage.removeItem("mtdraft");const p=parseDB(d);if(p.L.length){edInit(p.L);E.msg="Восстановлены несохранённые правки. Проверь и нажми «Сохранить для всех».";E.ok=1;go("edit")}}}catch(e){}}})();
+</script>
+</body>
+</html>
